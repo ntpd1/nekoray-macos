@@ -23,7 +23,7 @@ jobs:
           fi
           
   build:
-    runs-on: macos-13
+    runs-on: macos-10.15
     needs: check_tag
 
     steps:
@@ -38,17 +38,11 @@ jobs:
           name: nekoray_amd64
           path: nekoray/build/nekoray_amd64.zip
 
-      - name: Upload Artifact for arm64
-        uses: actions/upload-artifact@v2
-        with:
-          name: nekoray_arm64
-          path: nekoray/build/nekoray_arm64.zip
-
   test:
     strategy:
       matrix:
-        os: [macos-11, macos-12, macos-13]
-        arch: [amd64, arm64]
+        os: [macos-10.15]
+        arch: [amd64]
 
     runs-on: ${{ matrix.os }}
     needs: build
@@ -93,11 +87,7 @@ jobs:
           name: nekoray_amd64
           path: ./
 
-      - name: Download Artifact for arm64
-        uses: actions/download-artifact@v2
-        with:
-          name: nekoray_arm64
-          path: ./
+    
 
       - name: Check latest tag
         id: check_tag
@@ -144,13 +134,4 @@ jobs:
           asset_name: nekoray_amd64.zip
           asset_content_type: application/zip
 
-      - name: Upload Release Asset for arm64
-        id: upload_release_asset_arm64
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: nekoray_arm64.zip
-          asset_name: nekoray_arm64.zip
-          asset_content_type: application/zip
+      
